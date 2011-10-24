@@ -4,6 +4,7 @@ package com.android.balloon;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 
 import org.apache.http.HttpResponse;
@@ -40,7 +41,7 @@ public class SpaceBalloonClientActivity extends Activity implements LocationList
 	LocationManager lm;
 	StringBuilder sb;
 	int noOfFixes = 0;
-   
+	String run_id;
     
     
     /** Called when the activity is first created. */
@@ -48,10 +49,18 @@ public class SpaceBalloonClientActivity extends Activity implements LocationList
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
-
+		
+		/*
+		 * run id is set when the application is opened and stays the
+		 * same for the entire launch
+		 */
+		Random rn = new Random();
+		
+		run_id = Integer.toString(rn.nextInt(1000));
 		/* get TextView to display the GPS data */
 		txtInfo = (TextView) findViewById(R.id.textView1);
-
+		txtInfo.setText("Waiting for location data...");
+		
 		/* the location manager is the most vital part it allows access
 		 * to location and GPS status services */
 		lm = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -92,6 +101,7 @@ public class SpaceBalloonClientActivity extends Activity implements LocationList
 		packet.setLongitude(location.getLongitude());
 		packet.setAccuracy(location.getAccuracy());
 		packet.setTime(location.getTime());
+		packet.setRun_id(run_id);
 		
 		sb.append("No. of Fixes: ");
 		sb.append(noOfFixes);
@@ -119,7 +129,7 @@ public class SpaceBalloonClientActivity extends Activity implements LocationList
 		sb.append('\n');
 
 		sb.append("Timestamp: ");
-		sb.append(packet.getAccuracy());
+		sb.append(packet.getTime());
 		sb.append('\n');
 		
 		//put on screen
@@ -129,25 +139,26 @@ public class SpaceBalloonClientActivity extends Activity implements LocationList
 		String json = gson.toJson(packet);
 		//send to server
 		// Create a new HttpClient and Post Header
-	    HttpClient httpclient = new DefaultHttpClient();
-	    HttpPost httppost = new HttpPost("http://www.yoursite.com/script.php");
+		HttpClient httpclient = new DefaultHttpClient();
+		HttpPost httppost = new HttpPost("http://trillworks.com:3011/data");
 
-	    try {
-	        // Add your data
-	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
-	        
-	        nameValuePairs.add(new BasicNameValuePair("json", json));
-	        httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		try {
+			// Add your data
+			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(1);
 
-	        // Execute HTTP Post Request
-	        HttpResponse response = httpclient.execute(httppost);
-	       
-	        
-	    } catch (ClientProtocolException e) {
-	        // TODO Auto-generated catch block
-	    } catch (IOException e) {
-	        // TODO Auto-generated catch block
-	    }
+			nameValuePairs.add(new BasicNameValuePair("json", json));
+			httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+			
+
+			// Execute HTTP Post Request
+			HttpResponse response = httpclient.execute(httppost);
+			System.out.println(response);
+
+		} catch (ClientProtocolException e) {
+			System.out.println(e.getMessage());
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+		}
 	}
 
 	@Override
