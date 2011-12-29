@@ -2,18 +2,17 @@ package com.android.balloon;
 
 
 public class LocationPacket {
-	private String run_id = "0";
-	private String device_name = "CM_phone";
+	
 	
 	//secret is a pseudo password to prevent people from flooding the server with data.
-	private String secret = "rip_pimp_c";
 	private float speed;
 	private double altitude;
 	private double latitude;
 	private double longitude;
 	private double accuracy;
 	private long time;
-	
+	private String run_id = "";
+	private String secret = "";
 	
 	
 	public float getSpeed() {
@@ -54,6 +53,12 @@ public class LocationPacket {
 	}
 	public void setRun_id(String run_id) {
 		this.run_id = run_id;
+	}
+	public String getSecret() {
+		return secret;
+	}
+	public void setSecret(String secret) {
+		this.secret = secret;
 	}
 	
 
